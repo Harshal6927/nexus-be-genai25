@@ -1,0 +1,62 @@
+services:
+  pgvector:
+    user: "${UID}:${GID}"
+    image: pgvector/pgvector:pg17
+    container_name: harshal_pgvector
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
+      PGVECTOR_DB: mydb
+      PGVECTOR_USER: myuser
+      PGVECTOR_PASSWORD: mypassword
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
+    networks:
+      - mydb_pg_network
+    ports:
+      - "127.0.0.1:8931:5432"
+    healthcheck:
+      test:
+        - CMD
+        - pg_isready
+        - -U
+        - myuser
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  minio:
+    user: "${UID}:${GID}"
+    image: minio/minio:RELEASE.2025-02-07T23-21-09Z
+    container_name: harshal_minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "127.0.0.1:8932:9000" # API port
+      - "127.0.0.1:8933:9001" # Console port
+    networks:
+      - minionetwork
+    volumes:
+      - ./minio_data:/data
+    environment:
+      - MINIO_ROOT_USER=myuser
+      - MINIO_ROOT_PASSWORD=mypassword
+      - MINIO_DEFAULT_BUCKETS=mybucket
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:9000/minio/health/live"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  db_data:
+    name: db_data
+
+networks:
+  mydb_pg_network:
+    name: mydb_pg_network
+  minionetwork:
+    driver: bridge
+    name: minionetwork
