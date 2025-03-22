@@ -4,6 +4,7 @@ import os
 
 import google.generativeai as GOOGLE_GENAI
 import minio
+from dotenv import load_dotenv
 from litestar import MediaType, Request, Response, status_codes
 from litestar.config.cors import CORSConfig
 from litestar.exceptions.http_exceptions import ValidationException
@@ -11,6 +12,8 @@ from litestar.openapi import OpenAPIConfig
 from litestar.openapi.plugins import ScalarRenderPlugin
 from litestar.plugins.sqlalchemy import SQLAlchemyAsyncConfig
 from litestar_saq import CronJob, QueueConfig, SAQConfig, SAQPlugin
+
+load_dotenv()
 
 # openapi
 OPENAPI_CONFIG = OpenAPIConfig(
