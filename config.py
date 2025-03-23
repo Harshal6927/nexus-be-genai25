@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 
+import cohere
 import google.generativeai as GOOGLE_GENAI
 import minio
 from dotenv import load_dotenv
@@ -59,6 +60,12 @@ GENERATION_CONFIG = generation_types.GenerationConfig(
     max_output_tokens=8192,
     response_mime_type="text/plain",
 )
+
+COHERE_API_KEY = os.environ.get("COHERE_API_KEY")
+if COHERE_API_KEY:
+    COHERE = cohere.AsyncClientV2(api_key=COHERE_API_KEY)
+else:
+    raise ValueError("COHERE_API_KEY environment variable not set")
 
 # minio
 MINIO_ENDPOINT = os.environ.get("MINIO_ENDPOINT")
