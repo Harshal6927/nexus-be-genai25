@@ -3,8 +3,8 @@ import base64
 from datetime import datetime, timedelta
 
 # Replace with your GitHub username and Personal Access Token (if needed)
-GITHUB_USERNAME = 'iCodePanda'
-GITHUB_TOKEN = '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'
+GITHUB_USERNAME = ''
+GITHUB_TOKEN = ''
 
 BASE_URL = 'https://api.github.com'
 
