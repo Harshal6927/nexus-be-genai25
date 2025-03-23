@@ -3,6 +3,7 @@ from __future__ import annotations
 from contextlib import suppress
 from datetime import timedelta
 
+import cohere
 from advanced_alchemy.extensions.litestar import providers
 from google.cloud import storage
 from litestar import Controller, MediaType, Response, delete, get, post, put, status_codes
@@ -10,7 +11,7 @@ from litestar.plugins.sqlalchemy import repository, service
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from config import GENERATION_CONFIG, GOOGLE_GENAI
+from config import COHERE, GENERATION_CONFIG, GOOGLE_GENAI
 from models import Agent, Candidate, GenAIModel, Job, JobApplication
 from schema.job_application import CandidateCreate, CandidateUpdate, JobApplicationsResponse, JobApplicationUpdate
 
@@ -117,7 +118,7 @@ class JobApplicationController(Controller):
         genai_model: str,
         db_session: AsyncSession,
     ) -> Response:
-        _ = GenAIModel(genai_model)
+        GENAI_MODEL = GenAIModel(genai_model)
 
         agent = await db_session.scalar(select(Agent).where(Agent.id == agent_id))
 
@@ -164,24 +165,38 @@ class JobApplicationController(Controller):
         applications = []
 
         for row in result:
+            progress = 0
+
             system_instruction = f"SYSTEM: You are a AI agent named {agent.agent_name} helping recruiters to process the candidate applications. Your task is to analyze the provided candidate information and generate how much the candidate is suitable for the job. The higher the number, the more suitable the candidate is for the job.\n\nAGENT_INSTRUCTION: {agent.agent_instructions}\n\nJOB_DESCRIPTION: {job.job_description}\n\nJOB_REQUIREMENTS: {job.job_requirements}\n\nSYSTEM: Keep in mind that you can only reply with a number between 0 to 100 one time"
-
-            model = GOOGLE_GENAI.GenerativeModel(  # type: ignore
-                model_name="gemini-1.5-flash-8b",
-                generation_config=GENERATION_CONFIG,
-                system_instruction=system_instruction,
-            )
-
-            chat_session = model.start_chat()
-
             candidate_data = f"**RESUME:** {row.candidate_resume_data}\n\n\n\n**LINKEDIN:** {row.candidate_linkedin_data}\n\n\n\n**GITHUB:** {row.candidate_github_data}\n\n\n\n**PORTFOLIO:** {row.candidate_portfolio_data}"
 
-            response = await chat_session.send_message_async(candidate_data)
+            if GENAI_MODEL == GenAIModel.COMMAND_R_PLUS:
+                response = await COHERE.chat(
+                    model=GENAI_MODEL,
+                    messages=[
+                        cohere.SystemChatMessageV2(content=system_instruction),
+                        cohere.UserChatMessageV2(content=candidate_data),
+                    ],
+                )
+                try:
+                    response = response.message.dict()
+                    progress = int(response["content"][0]["text"])
+                except:
+                    pass
+            else:
+                model = GOOGLE_GENAI.GenerativeModel(  # type: ignore
+                    model_name="gemini-1.5-flash-8b",
+                    generation_config=GENERATION_CONFIG,
+                    system_instruction=system_instruction,
+                )
 
-            progress = 0
-            if response.text:
-                with suppress(ValueError):
-                    progress = int(response.text)
+                chat_session = model.start_chat()
+
+                response = await chat_session.send_message_async(candidate_data)
+
+                if response.text:
+                    with suppress(ValueError):
+                        progress = int(response.text)
 
             application = {
                 "id": row.id,

@@ -1,6 +1,7 @@
 [project]
 dependencies = [
     "advanced-alchemy==1.0.1",
+    "cohere==5.14.0",
     "crawl4ai==0.4.248",
     "google-cloud-storage==3.1.0",
     "google-generativeai==0.8.4",
@@ -41,6 +42,8 @@ ignore = [
     "TC002",
     "E712",
     "E501",
+    "S110",
+    "E722",
 ]
 line-length = 120
 select = ["ALL"]
