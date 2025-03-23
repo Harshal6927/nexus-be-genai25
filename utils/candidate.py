@@ -11,6 +11,7 @@ from usp.tree import sitemap_tree_for_homepage
 
 from config import DB_CONFIG, GENERATION_CONFIG, GOOGLE_GENAI
 from models import Candidate
+from utils.github_parse import process_github
 
 RUN_CONFIG = CrawlerRunConfig(
     cache_mode=CacheMode.BYPASS,
@@ -79,7 +80,7 @@ async def process_candidate(_: Context) -> None:
 
             github = None
             if candidate.candidate_github:
-                print("Processing Github")
+                github = await process_github(candidate.candidate_github)
 
             linkedin = None
             if candidate.candidate_linkedin:

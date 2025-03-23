@@ -17,6 +17,10 @@ from litestar_saq import CronJob, QueueConfig, SAQConfig, SAQPlugin
 
 load_dotenv()
 
+# github
+GITHUB_USERNAME = os.environ.get("GITHUB_USERNAME")
+GITHUB_TOKEN = os.environ.get("GITHUB_TOKEN")
+
 # openapi
 OPENAPI_CONFIG = OpenAPIConfig(
     title="My API",
