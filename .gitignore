@@ -13,3 +13,4 @@ db_data/
 minio_data/
 steps.md
 .env
+test.py

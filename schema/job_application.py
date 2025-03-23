@@ -15,6 +15,15 @@ class CandidateCreate(Struct):
     candidate_portfolio: str | None = None
 
 
+class CandidateUpdate(Struct):
+    data_processed: bool = False
+    candidate_image: str | None = None
+    candidate_resume_data: str | None = None
+    candidate_linkedin_data: str | None = None
+    candidate_github_data: str | None = None
+    candidate_portfolio_data: str | None = None
+
+
 class JobApplicationsResponse(Struct):
     job_id: int
     candidate_id: int
@@ -23,3 +32,8 @@ class JobApplicationsResponse(Struct):
     id: int
     created_at: datetime
     updated_at: datetime
+
+
+class JobApplicationUpdate(Struct):
+    candidate_skills: str | None = None
+    candidate_summary: str | None = None

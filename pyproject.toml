@@ -1,7 +1,7 @@
 [project]
 dependencies = [
     "advanced-alchemy==1.0.1",
-    "crawl4ai==0.5.0.post4",
+    "crawl4ai==0.4.248",
     "google-generativeai==0.8.4",
     "litestar-saq==0.5.0",
     "litestar[standard]==2.15.1",
@@ -37,6 +37,8 @@ ignore = [
     "D106",
     "PLR6301",
     "TC002",
+    "E712",
+    "E501",
 ]
 line-length = 120
 select = ["ALL"]

@@ -1,13 +1,17 @@
 from __future__ import annotations
 
+import json
+from contextlib import suppress
+
 from advanced_alchemy.extensions.litestar import providers
-from litestar import Controller, MediaType, Response, delete, get, post, status_codes
+from litestar import Controller, MediaType, Response, delete, get, post, put, status_codes
 from litestar.plugins.sqlalchemy import repository, service
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from models import Candidate, Job, JobApplication
-from schema.job_application import CandidateCreate, JobApplicationsResponse
+from config import GENERATION_CONFIG, GOOGLE_GENAI
+from models import Agent, Candidate, GenAIModel, Job, JobApplication
+from schema.job_application import CandidateCreate, CandidateUpdate, JobApplicationsResponse, JobApplicationUpdate
 
 
 class JobApplicationService(service.SQLAlchemyAsyncRepositoryService[JobApplication]):
@@ -38,8 +42,19 @@ class JobApplicationController(Controller):
         self,
         job_application_id: int,
         job_applications_service: JobApplicationService,
+        db_session: AsyncSession,
     ) -> JobApplicationsResponse:
         obj = await job_applications_service.delete(job_application_id)
+
+        candidate = await db_session.scalar(
+            select(Candidate).where(Candidate.id == obj.candidate_id),
+        )
+
+        if candidate is None:
+            raise ValueError("Candidate not found")
+
+        await db_session.delete(candidate)
+
         return job_applications_service.to_schema(obj, schema_type=JobApplicationsResponse)
 
     # candidate application
@@ -81,8 +96,34 @@ class JobApplicationController(Controller):
             content={"status": "success", "message": "Job applied successfully"},
         )
 
-    @get("/{job_id:int}")
-    async def get_job_applications(self, job_id: int, db_session: AsyncSession) -> Response:
+    @get("/{job_id:int}/{agent_id:int}/{genai_model:str}")
+    async def get_job_applications(
+        self,
+        job_id: int,
+        agent_id: int,
+        genai_model: str,
+        db_session: AsyncSession,
+    ) -> Response:
+        _ = GenAIModel(genai_model)
+
+        agent = await db_session.scalar(select(Agent).where(Agent.id == agent_id))
+
+        if agent is None:
+            return Response(
+                status_code=status_codes.HTTP_404_NOT_FOUND,
+                media_type=MediaType.JSON,
+                content={"status": "error", "message": "Agent not found"},
+            )
+
+        job = await db_session.scalar(select(Job).where(Job.id == job_id))
+
+        if job is None:
+            return Response(
+                status_code=status_codes.HTTP_404_NOT_FOUND,
+                media_type=MediaType.JSON,
+                content={"status": "error", "message": "Job not found"},
+            )
+
         query = (
             select(
                 JobApplication.id,
@@ -94,6 +135,10 @@ class JobApplicationController(Controller):
                 Candidate.candidate_resume_id,
                 Candidate.data_processed,
                 Candidate.candidate_image,
+                Candidate.candidate_resume_data,
+                Candidate.candidate_linkedin_data,
+                Candidate.candidate_github_data,
+                Candidate.candidate_portfolio_data,
                 JobApplication.created_at,
                 JobApplication.candidate_summary,
                 JobApplication.candidate_skills,
@@ -106,7 +151,25 @@ class JobApplicationController(Controller):
         applications = []
 
         for row in result:
-            # TODO: call the GENAI API to get the progress
+            system_instruction = f"SYSTEM: You are a AI agent named {agent.agent_name} helping recruiters to process the candidate applications. Your task is to analyze the provided candidate information and generate how much the candidate is suitable for the job. You will always reply with a number between 0 to 100. The higher the number, the more suitable the candidate is for the job.\n\nAGENT_INSTRUCTION: {agent.agent_instructions}\n\nJOB_DESCRIPTION: {job.job_description}\n\nJOB_REQUIREMENTS: {job.job_requirements}\n\nSYSTEM: Keep in mind that you can only reply with a number between 0 to 100."
+
+            model = GOOGLE_GENAI.GenerativeModel(  # type: ignore
+                model_name="gemini-1.5-flash-8b",
+                generation_config=GENERATION_CONFIG,
+                system_instruction=system_instruction,
+            )
+
+            chat_session = model.start_chat()
+
+            candidate_data = f"**RESUME:** {row.candidate_resume_data}\n\n\n\n**LINKEDIN:** {row.candidate_linkedin_data}\n\n\n\n**GITHUB:** {row.candidate_github_data}\n\n\n\n**PORTFOLIO:** {row.candidate_portfolio_data}"
+
+            response = await chat_session.send_message_async(candidate_data)
+
+            progress = 0
+            if response.text:
+                with suppress(ValueError):
+                    progress = int(response.text)
+
             application = {
                 "id": row.id,
                 "candidate_name": row.candidate_name,
@@ -117,10 +180,10 @@ class JobApplicationController(Controller):
                 "candidate_resume": row.candidate_resume_id,
                 "applied_date": row.created_at.isoformat(),
                 "data_processed": row.data_processed,
-                "progress": 0,
+                "progress": progress,
                 "summary": row.candidate_summary,
                 "avatar": row.candidate_image,
-                "skills": row.candidate_skills or [],
+                "skills": eval(row.candidate_skills) if row.candidate_skills else [],
             }
             applications.append(application)
 
@@ -131,4 +194,68 @@ class JobApplicationController(Controller):
                 "status": "success",
                 "job_applications": applications,
             },
+        )
+
+    @put("/candidate/{candidate_id:int}")
+    async def update_candidate(
+        self,
+        candidate_id: int,
+        data: CandidateUpdate,
+        db_session: AsyncSession,
+    ) -> Response:
+        candidate = await db_session.scalar(
+            select(Candidate).where(Candidate.id == candidate_id),
+        )
+
+        if candidate is None:
+            return Response(
+                status_code=status_codes.HTTP_404_NOT_FOUND,
+                media_type=MediaType.JSON,
+                content={"status": "error", "message": "Candidate not found"},
+            )
+
+        candidate.data_processed = data.data_processed
+        candidate.candidate_image = data.candidate_image  # type: ignore
+        candidate.candidate_resume_data = data.candidate_resume_data  # type: ignore
+        candidate.candidate_linkedin_data = data.candidate_linkedin_data  # type: ignore
+        candidate.candidate_github_data = data.candidate_github_data  # type: ignore
+        candidate.candidate_portfolio_data = data.candidate_portfolio_data  # type: ignore
+
+        return Response(
+            status_code=status_codes.HTTP_200_OK,
+            media_type=MediaType.JSON,
+            content={"status": "success", "message": "Candidate updated successfully"},
+        )
+
+    @put("/{job_application_id:int}")
+    async def update_job_application(
+        self,
+        job_application_id: int,
+        data: JobApplicationUpdate,
+        job_applications_service: JobApplicationService,
+    ) -> JobApplicationsResponse:
+        obj = await job_applications_service.update(data=data, item_id=job_application_id)
+        return job_applications_service.to_schema(obj, schema_type=JobApplicationsResponse)
+
+    @get("/{candidate_id:int}")
+    async def get_job_application(
+        self,
+        candidate_id: int,
+        db_session: AsyncSession,
+    ) -> JobApplicationsResponse:
+        job_application = await db_session.scalar(
+            select(JobApplication).where(JobApplication.candidate_id == candidate_id),
+        )
+
+        if job_application is None:
+            raise ValueError("Job application not found")
+
+        return JobApplicationsResponse(
+            job_id=job_application.job_id,
+            candidate_id=job_application.candidate_id,
+            candidate_skills=job_application.candidate_skills,
+            candidate_summary=job_application.candidate_summary,
+            id=job_application.id,
+            created_at=job_application.created_at,
+            updated_at=job_application.updated_at,
         )

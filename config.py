@@ -5,6 +5,7 @@ import os
 import google.generativeai as GOOGLE_GENAI
 import minio
 from dotenv import load_dotenv
+from google.generativeai.types import generation_types
 from litestar import MediaType, Request, Response, status_codes
 from litestar.config.cors import CORSConfig
 from litestar.exceptions.http_exceptions import ValidationException
@@ -50,6 +51,14 @@ if GEMINI_API_KEY:
     GOOGLE_GENAI.configure(api_key=GEMINI_API_KEY)  # type: ignore
 else:
     raise ValueError("GEMINI_API_KEY environment variable not set")
+
+GENERATION_CONFIG = generation_types.GenerationConfig(
+    temperature=1,
+    top_p=0.95,
+    top_k=40,
+    max_output_tokens=8192,
+    response_mime_type="text/plain",
+)
 
 # minio
 MINIO_ENDPOINT = os.environ.get("MINIO_ENDPOINT")
