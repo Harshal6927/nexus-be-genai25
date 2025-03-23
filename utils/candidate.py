@@ -1,7 +1,10 @@
+import os
 from contextlib import suppress
 
 import httpx
+import pymupdf
 from crawl4ai import AsyncWebCrawler, CacheMode, CrawlerRunConfig
+from google.cloud import storage
 from saq.types import Context
 from sqlalchemy import select
 from usp.tree import sitemap_tree_for_homepage
@@ -34,6 +37,26 @@ async def process_portfolio(url: str) -> str:
     return "\n".join(data)
 
 
+async def process_resume(source_blob_name: str) -> str:
+    storage_client = storage.Client()
+    bucket = storage_client.bucket("nexus-genai25")
+    blob = bucket.blob(source_blob_name)
+
+    path = f"./data/{source_blob_name}"
+
+    blob.download_to_filename(path)
+
+    data = ""
+    with pymupdf.open(path) as document:
+        for page in document:
+            text = page.get_text()  # type: ignore
+            data += text
+
+    os.remove(path)
+
+    return data
+
+
 async def process_candidate(_: Context) -> None:
     async with DB_CONFIG.get_session() as db_session:
         candidates = await db_session.scalars(select(Candidate).where(Candidate.data_processed == False))
@@ -64,7 +87,7 @@ async def process_candidate(_: Context) -> None:
 
             resume = None
             if candidate.candidate_resume_id:
-                print("Processing Resume")
+                resume = await process_resume(candidate.candidate_resume_id)
 
             data = f"**RESUME:** {resume}\n\n\n\n**LINKEDIN:** {linkedin}\n\n\n\n**GITHUB:** {github}\n\n\n\n**PORTFOLIO:** {response}"
 

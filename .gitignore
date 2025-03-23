@@ -14,3 +14,4 @@ minio_data/
 steps.md
 .env
 test.py
+creds.json

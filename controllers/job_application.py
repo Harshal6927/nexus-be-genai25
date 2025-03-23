@@ -1,9 +1,10 @@
 from __future__ import annotations
 
-import json
 from contextlib import suppress
+from datetime import timedelta
 
 from advanced_alchemy.extensions.litestar import providers
+from google.cloud import storage
 from litestar import Controller, MediaType, Response, delete, get, post, put, status_codes
 from litestar.plugins.sqlalchemy import repository, service
 from sqlalchemy import select
@@ -96,6 +97,18 @@ class JobApplicationController(Controller):
             content={"status": "success", "message": "Job applied successfully"},
         )
 
+    @get("/signed-url/{blob_name:str}")
+    async def get_signed_url(self, blob_name: str) -> str:
+        storage_client = storage.Client()
+        bucket = storage_client.bucket("nexus-genai25")
+        blob = bucket.blob(blob_name)
+
+        return blob.generate_signed_url(
+            version="v4",
+            expiration=timedelta(seconds=30),
+            method="PUT",
+        )
+
     @get("/{job_id:int}/{agent_id:int}/{genai_model:str}")
     async def get_job_applications(
         self,
@@ -151,7 +164,7 @@ class JobApplicationController(Controller):
         applications = []
 
         for row in result:
-            system_instruction = f"SYSTEM: You are a AI agent named {agent.agent_name} helping recruiters to process the candidate applications. Your task is to analyze the provided candidate information and generate how much the candidate is suitable for the job. You will always reply with a number between 0 to 100. The higher the number, the more suitable the candidate is for the job.\n\nAGENT_INSTRUCTION: {agent.agent_instructions}\n\nJOB_DESCRIPTION: {job.job_description}\n\nJOB_REQUIREMENTS: {job.job_requirements}\n\nSYSTEM: Keep in mind that you can only reply with a number between 0 to 100."
+            system_instruction = f"SYSTEM: You are a AI agent named {agent.agent_name} helping recruiters to process the candidate applications. Your task is to analyze the provided candidate information and generate how much the candidate is suitable for the job. The higher the number, the more suitable the candidate is for the job.\n\nAGENT_INSTRUCTION: {agent.agent_instructions}\n\nJOB_DESCRIPTION: {job.job_description}\n\nJOB_REQUIREMENTS: {job.job_requirements}\n\nSYSTEM: Keep in mind that you can only reply with a number between 0 to 100 one time"
 
             model = GOOGLE_GENAI.GenerativeModel(  # type: ignore
                 model_name="gemini-1.5-flash-8b",

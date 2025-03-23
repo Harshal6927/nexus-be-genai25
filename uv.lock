@@ -627,6 +627,55 @@ wheels = [
 ]
 
 [[package]]
+name = "google-cloud-core"
+version = "2.4.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "google-api-core" },
+    { name = "google-auth" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/d6/b8/2b53838d2acd6ec6168fd284a990c76695e84c65deee79c9f3a4276f6b4f/google_cloud_core-2.4.3.tar.gz", hash = "sha256:1fab62d7102844b278fe6dead3af32408b1df3eb06f5c7e8634cbd40edc4da53", size = 35861 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/40/86/bda7241a8da2d28a754aad2ba0f6776e35b67e37c36ae0c45d49370f1014/google_cloud_core-2.4.3-py2.py3-none-any.whl", hash = "sha256:5130f9f4c14b4fafdff75c79448f9495cfade0d8775facf1b09c3bf67e027f6e", size = 29348 },
+]
+
+[[package]]
+name = "google-cloud-storage"
+version = "3.1.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "google-api-core" },
+    { name = "google-auth" },
+    { name = "google-cloud-core" },
+    { name = "google-crc32c" },
+    { name = "google-resumable-media" },
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/f3/08/52143124415a889bbab60a8ecede1e31ea0e8d992ca078317886f26dc3be/google_cloud_storage-3.1.0.tar.gz", hash = "sha256:944273179897c7c8a07ee15f2e6466a02da0c7c4b9ecceac2a26017cb2972049", size = 7666527 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/13/b8/c99c965659f45efa73080477c49ffddf7b9aecb00806be8422560bb5b824/google_cloud_storage-3.1.0-py2.py3-none-any.whl", hash = "sha256:eaf36966b68660a9633f03b067e4a10ce09f1377cae3ff9f2c699f69a81c66c6", size = 174861 },
+]
+
+[[package]]
+name = "google-crc32c"
+version = "1.7.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/fd/c6/bd09366753b49353895ed73bad74574d9086b26b53bb5b9213962009719a/google_crc32c-1.7.0.tar.gz", hash = "sha256:c8c15a04b290c7556f277acc55ad98503a8bc0893ea6860fd5b5d210f3f558ce", size = 14546 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/1d/e9/696a1b43fbe048a8ec246a6af2926662aec083d228a36bc17e800d3942ec/google_crc32c-1.7.0-cp312-cp312-macosx_12_0_arm64.whl", hash = "sha256:11b3b2f16a534c76ce3c9503800c7c2578c13a56e8e409eac273330e25b5c521", size = 30311 },
+    { url = "https://files.pythonhosted.org/packages/01/84/355dad7a19758bcf34f0dbfcb2666c5d519cb9c9c6b1d5ea5c23201c5462/google_crc32c-1.7.0-cp312-cp312-macosx_12_0_x86_64.whl", hash = "sha256:fd3afea81a7c7b95f98c065edc5a0fdb58f1fea5960e166962b142ec037fe5e0", size = 30156 },
+    { url = "https://files.pythonhosted.org/packages/bb/38/affe1fa727763a03728eac51e038760c606999c6faa7c0e02924ec99a414/google_crc32c-1.7.0-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:1d07ad3ff51f26cef5bbad66622004eca3639271230cfc2443845ec4650e1c57", size = 33021 },
+    { url = "https://files.pythonhosted.org/packages/2b/05/138347cbd18fb7e49c76ed8ef80ff2fdaebde675a3f2b8c7ad273b735065/google_crc32c-1.7.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:af6e80f83d882b247eef2c0366ec72b1ffb89433b9f35dc621d79190840f1ea6", size = 32634 },
+    { url = "https://files.pythonhosted.org/packages/88/2b/7a01e7b60ef5c4ac39301b9951bcc516001b5d30e9aced440f96d8f49994/google_crc32c-1.7.0-cp312-cp312-win_amd64.whl", hash = "sha256:10721764a9434546b7961194fbb1f80efbcaf45b8498ed379d64f8891d4c155b", size = 33462 },
+    { url = "https://files.pythonhosted.org/packages/91/aa/2a7344796fb684c926d0002196e407453509e677b9eab8d562a5702e5f83/google_crc32c-1.7.0-cp313-cp313-macosx_12_0_arm64.whl", hash = "sha256:76bb19d182b999f9c9d580b1d7ab6e9334ab23dd669bf91f501812103408c85b", size = 30306 },
+    { url = "https://files.pythonhosted.org/packages/24/8a/e2d52d4111d3ef48e0a8b2324e80b600f6c5339dae9827744b94325a0b6a/google_crc32c-1.7.0-cp313-cp313-macosx_12_0_x86_64.whl", hash = "sha256:6a40522958040051c755a173eb98c05ad4d64a6dd898888c3e5ccca2d1cbdcdc", size = 30149 },
+    { url = "https://files.pythonhosted.org/packages/da/60/8cd1605391da56c55db67ef64660e72b89787755a271ebe04f9418320b19/google_crc32c-1.7.0-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:f714fe5cdf5007d7064c57cf7471a99e0cbafda24ddfa829117fc3baafa424f7", size = 32972 },
+    { url = "https://files.pythonhosted.org/packages/3d/65/065ffe1bb324709e7704205261b429588ed17bbde8b7940eb12b140a6082/google_crc32c-1.7.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f04e58dbe1bf0c9398e603a9be5aaa09e0ba7eb022a3293195d8749459a01069", size = 32616 },
+    { url = "https://files.pythonhosted.org/packages/1b/30/51b10f995be9bd09551d050117c571f9749297717fcc2e7946e242eb4830/google_crc32c-1.7.0-cp313-cp313t-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:364067b063664dd8d1fec75a3fe85edf05c46f688365269beccaf42ef5dfe889", size = 33080 },
+    { url = "https://files.pythonhosted.org/packages/4d/ec/a7ca773559c7ab6919ac0255d84c74571c8cecf0e8891036705f6861c04d/google_crc32c-1.7.0-cp313-cp313t-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e1b0d6044799f6ac51d1cc2decb997280a83c448b3bef517a54b57a3b71921c0", size = 32708 },
+]
+
+[[package]]
 name = "google-generativeai"
 version = "0.8.4"
 source = { registry = "https://pypi.org/simple" }
@@ -642,6 +691,18 @@ dependencies = [
 ]
 wheels = [
     { url = "https://files.pythonhosted.org/packages/9b/b0/6c6af327a8a6ef3be6fe79be1d6f1e2914d6c363aa6b081b93396f4460a7/google_generativeai-0.8.4-py3-none-any.whl", hash = "sha256:e987b33ea6decde1e69191ddcaec6ef974458864d243de7191db50c21a7c5b82", size = 175409 },
+]
+
+[[package]]
+name = "google-resumable-media"
+version = "2.7.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "google-crc32c" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/58/5a/0efdc02665dca14e0837b62c8a1a93132c264bd02054a15abb2218afe0ae/google_resumable_media-2.7.2.tar.gz", hash = "sha256:5280aed4629f2b60b847b0d42f9857fd4935c11af266744df33d8074cae92fe0", size = 2163099 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/82/35/b8d3baf8c46695858cb9d8835a53baa1eeb9906ddaf2f728a5f5b640fd1e/google_resumable_media-2.7.2-py2.py3-none-any.whl", hash = "sha256:3ce7551e9fe6d99e9a126101d2536612bb73486721951e9562fee0f90c6ababa", size = 81251 },
 ]
 
 [[package]]
@@ -1659,6 +1720,21 @@ wheels = [
 ]
 
 [[package]]
+name = "pymupdf"
+version = "1.25.4"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/25/56/d7de0325125621a3d095eb43ce35f2e036cd4c0489ff5e8cae816f1cd8b9/pymupdf-1.25.4.tar.gz", hash = "sha256:5f189466b68901055a9ddc77dc1c91cba081a60964f0caa6ff5b9b87001a0194", size = 69792548 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/59/fa/cd82d78401bed6452ea07e2a3ffd6c30eddb635b888ea5f2f699c2968e80/pymupdf-1.25.4-cp39-abi3-macosx_10_9_x86_64.whl", hash = "sha256:b39ab5fc0cc793f2a93908cb4dc13182e61e9ace3476850ebf0e505f65355475", size = 19364290 },
+    { url = "https://files.pythonhosted.org/packages/ae/76/0757056bdcf273de4934681b84acde6e0b61a46b1755038e8d786ac6b368/pymupdf-1.25.4-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:72ac2a460e15a4b75fb22d0bdeb9eb9b3bd6ab44d5288e56f85ff9e4241d0830", size = 18604391 },
+    { url = "https://files.pythonhosted.org/packages/41/2f/7ca622fff06e879fd4adcde8b1bdbe9989ff2f36fc0607481581f4a3caa1/pymupdf-1.25.4-cp39-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:bd16e264438b01bf6f6b8722deb49df20c0a9a7be2b4a8e29dcb7b5183d8b42a", size = 19464372 },
+    { url = "https://files.pythonhosted.org/packages/36/ae/9b3651d457698ff5e19c5a663c51703cc990892b35cf4a779c36a1a1bf64/pymupdf-1.25.4-cp39-abi3-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:72817aa5f5023632346eee4aad0c32018d7879cf9a72e1820054dc9d8c48150f", size = 20027724 },
+    { url = "https://files.pythonhosted.org/packages/09/f8/3ba60c9cbb01c9aacc2e1c35fc7640456306da99cdea913954f33a0c9c74/pymupdf-1.25.4-cp39-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:a8c23242d209512437187dc728001fc7c65c2dd9d37b50071f34c5cd745194a3", size = 21292722 },
+    { url = "https://files.pythonhosted.org/packages/0e/0a/3eb1fab9e788790be32d8ca43235f59652d44252168bfba457c5496948fe/pymupdf-1.25.4-cp39-abi3-win32.whl", hash = "sha256:d90e6087f9b153999fa9f2c4709488fb0355de0302ec502a76c4fc0c0a0c535e", size = 15110936 },
+    { url = "https://files.pythonhosted.org/packages/c3/9f/2872a29766dfe65fb97268233503cc9f7ba6e776eedbdb88ed47216aef84/pymupdf-1.25.4-cp39-abi3-win_amd64.whl", hash = "sha256:af8fa1f7920b3b27343b2511cb9fc44baf2bad8b948db0b0f9d5b2fa589cb305", size = 16579269 },
+]
+
+[[package]]
 name = "pyopenssl"
 version = "25.0.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1985,6 +2061,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "advanced-alchemy" },
     { name = "crawl4ai" },
+    { name = "google-cloud-storage" },
     { name = "google-generativeai" },
     { name = "litestar", extra = ["standard"] },
     { name = "litestar-saq" },
@@ -1992,6 +2069,7 @@ dependencies = [
     { name = "pre-commit" },
     { name = "psycopg" },
     { name = "psycopg-pool" },
+    { name = "pymupdf" },
     { name = "python-dotenv" },
     { name = "ultimate-sitemap-parser" },
 ]
@@ -2000,6 +2078,7 @@ dependencies = [
 requires-dist = [
     { name = "advanced-alchemy", specifier = "==1.0.1" },
     { name = "crawl4ai", specifier = "==0.4.248" },
+    { name = "google-cloud-storage", specifier = "==3.1.0" },
     { name = "google-generativeai", specifier = "==0.8.4" },
     { name = "litestar", extras = ["standard"], specifier = "==2.15.1" },
     { name = "litestar-saq", specifier = "==0.5.0" },
@@ -2007,6 +2086,7 @@ requires-dist = [
     { name = "pre-commit", specifier = "==4.2.0" },
     { name = "psycopg", specifier = "==3.2.6" },
     { name = "psycopg-pool", specifier = "==3.2.6" },
+    { name = "pymupdf", specifier = "==1.25.4" },
     { name = "python-dotenv", specifier = "==1.0.1" },
     { name = "ultimate-sitemap-parser", specifier = "==1.3.0" },
 ]
