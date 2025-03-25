@@ -4,7 +4,6 @@ import os
 
 import cohere
 import google.generativeai as GOOGLE_GENAI
-import minio
 from dotenv import load_dotenv
 from google.generativeai.types import generation_types
 from litestar import MediaType, Request, Response, status_codes
@@ -70,20 +69,6 @@ if COHERE_API_KEY:
     COHERE = cohere.AsyncClientV2(api_key=COHERE_API_KEY)
 else:
     raise ValueError("COHERE_API_KEY environment variable not set")
-
-# minio
-MINIO_ENDPOINT = os.environ.get("MINIO_ENDPOINT")
-MINIO_ACCESS_KEY = os.environ.get("MINIO_ACCESS_KEY")
-MINIO_SECRET_KEY = os.environ.get("MINIO_SECRET_KEY")
-if MINIO_ENDPOINT and MINIO_ACCESS_KEY and MINIO_SECRET_KEY:
-    MINIO_CLIENT = minio.Minio(
-        MINIO_ENDPOINT,
-        MINIO_ACCESS_KEY,
-        MINIO_SECRET_KEY,
-        secure=False,
-    )
-else:
-    raise ValueError("Minio environment variables not set")
 
 # saq
 SAQ = SAQPlugin(

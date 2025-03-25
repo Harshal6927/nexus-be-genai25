@@ -6,7 +6,11 @@
 
 ### API Keys
 
-You will need [GEMINI API](https://ai.google.dev/gemini-api/docs/api-key). Add these keys to the `.env` file. Refer to the `.env.example` file for the format.
+You will need [GEMINI](https://ai.google.dev/gemini-api/docs/api-key) and [COHERE](https://dashboard.cohere.com/api-keys) api key. Add these keys to the `.env` file. Refer to the `.env.example` file for the format.
+
+### GCP
+
+You will also need a GCP service account `credentials.json` file. Add the path to the `.env` file. Refer to the `.env.example` file for the format.
 
 ### Database
 
